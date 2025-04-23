@@ -16,8 +16,9 @@ func main() {
 		FullTimestamp: true,
 	})
 	db := db.ConnectDB()
-	newRepo := repository.NewRepository(db)
-	newService := service.NewService(newRepo)
+	newAccountRepo := repository.NewAccountRepository(db)
+	newTransferRepo := repository.NewTransferRepository(db)
+	newService := service.NewService(newAccountRepo, newTransferRepo)
 	newController := controller.NewController(newService)
 
 	routes.RegisterRoutes(r, newController)
