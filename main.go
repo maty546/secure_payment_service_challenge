@@ -2,13 +2,25 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/maty546/secure_payment_service_challenge/controller"
+	"github.com/maty546/secure_payment_service_challenge/db"
+	"github.com/maty546/secure_payment_service_challenge/repository"
 	"github.com/maty546/secure_payment_service_challenge/routes"
+	"github.com/maty546/secure_payment_service_challenge/service"
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
 	r := gin.Default()
+	log.SetFormatter(&log.TextFormatter{
+		FullTimestamp: true,
+	})
+	db := db.ConnectDB()
+	newRepo := repository.NewRepository(db)
+	newService := service.NewService(newRepo)
+	newController := controller.NewController(newService)
 
-	routes.RegisterRoutes(r)
+	routes.RegisterRoutes(r, newController)
 
-	r.Run(":8080") // start server on port 8080
+	r.Run(":8080")
 }

@@ -5,6 +5,6 @@ import (
 	"github.com/maty546/secure_payment_service_challenge/controller"
 )
 
-func RegisterRoutes(r *gin.Engine) {
-	r.GET("/ping", controller.Ping)
+func RegisterRoutes(r *gin.Engine, controller controller.ISecurePaymentsController) {
+	r.GET("/items/:id", controller.GetItem)
 }
