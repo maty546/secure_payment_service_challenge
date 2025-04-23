@@ -4,11 +4,10 @@ import "time"
 
 type Transfer struct {
 	ID            uint `gorm:"primaryKey"`
-	FromAccountID uint
-	ToAccountID   uint
+	FromAccountID string
+	ToAccountID   string
 	Amount        int64
 	Status        TransferStatus
-	ExternalID    string
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }

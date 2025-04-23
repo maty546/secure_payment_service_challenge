@@ -3,9 +3,9 @@ package controller
 import "github.com/maty546/secure_payment_service_challenge/models"
 
 type HandleTransferStartRequest struct {
-	FromAccountID uint  `json:"from"`
-	ToAccountID   uint  `json:"to"`
-	Amount        int64 `json:"amount"`
+	FromAccountID string `json:"from"`
+	ToAccountID   string `json:"to"`
+	Amount        int64  `json:"amount"`
 }
 
 func (req HandleTransferStartRequest) parseIntoTransferModel() models.Transfer {

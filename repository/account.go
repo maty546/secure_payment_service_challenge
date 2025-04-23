@@ -11,7 +11,7 @@ import (
 )
 
 type IAccountRepository interface {
-	GetByID(c *gin.Context, id uint) (models.Account, error)
+	GetByID(c *gin.Context, id string) (models.Account, error)
 	Save(c *gin.Context, acc models.Account) error
 }
 
@@ -25,9 +25,9 @@ func NewAccountRepository(db *gorm.DB) accountRepository {
 
 var _ IAccountRepository = (accountRepository{})
 
-func (r accountRepository) GetByID(c *gin.Context, id uint) (models.Account, error) {
+func (r accountRepository) GetByID(c *gin.Context, id string) (models.Account, error) {
 	var item models.Account
-	if result := r.db.First(&item, id); result.Error != nil {
+	if result := r.db.First(&item, "id = ?", id); result.Error != nil {
 		log.Error(fmt.Sprintf("accountRepository | GetByID err - %s", result.Error.Error()))
 		return models.Account{}, result.Error
 	}

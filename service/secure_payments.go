@@ -13,7 +13,7 @@ import (
 type ISecurePaymentsService interface {
 	StartTransfer(c *gin.Context, transfer models.Transfer) (models.Transfer, error)
 	GetTransferByID(c *gin.Context, transferID uint) (models.Transfer, error)
-	GetAccountByID(c *gin.Context, accountID uint) (models.Account, error)
+	GetAccountByID(c *gin.Context, accountID string) (models.Account, error)
 }
 
 type securePaymentsService struct {
@@ -69,7 +69,7 @@ func (s securePaymentsService) GetTransferByID(c *gin.Context, transferID uint) 
 	return transfer, nil
 }
 
-func (s securePaymentsService) GetAccountByID(c *gin.Context, accountID uint) (models.Account, error) {
+func (s securePaymentsService) GetAccountByID(c *gin.Context, accountID string) (models.Account, error) {
 	acc, err := s.accountsRepo.GetByID(c, accountID)
 	if err != nil {
 		log.Error(fmt.Sprintf("securePaymentsService | GetAccountByID err - %s", err.Error()))

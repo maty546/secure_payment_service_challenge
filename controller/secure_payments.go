@@ -72,16 +72,9 @@ func (s securePaymentsController) HandleTransferGet(c *gin.Context) {
 
 func (s securePaymentsController) HandleAccountGet(c *gin.Context) {
 
-	idStr := c.Param("id")
+	id := c.Param("id")
 
-	id, err := strconv.ParseUint(idStr, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
-		log.Error(fmt.Sprintf("securePaymentsController | HandleAccountGet err - %s", err.Error()))
-		return
-	}
-
-	account, err := s.service.GetAccountByID(c, uint(id))
+	account, err := s.service.GetAccountByID(c, id)
 	if err != nil {
 		log.Error(fmt.Sprintf("securePaymentsController | HandleAccountGet err - %s", err.Error()))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
