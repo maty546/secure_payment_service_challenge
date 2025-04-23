@@ -27,11 +27,13 @@ func NewService(accountsRepo repository.IAccountRepository, transfersRepo reposi
 
 var _ ISecurePaymentsService = (securePaymentsService{})
 
-var errCouldNotObtainDestinationAccount = "could not obtain destination account - %#v"
-var errCouldNotObtainOriginAccount = "could not obtain origin account - %#v"
-var errCouldNotStartTransfer = "could not start transfer - %#v"
-var errCouldNotGetAcc = "could not get account - %#v"
-var errCouldNotGetTr = "could not get transfer - %#v"
+var (
+	errCouldNotObtainDestinationAccount = "could not obtain destination account - %#v"
+	errCouldNotObtainOriginAccount      = "could not obtain origin account - %#v"
+	errCouldNotStartTransfer            = "could not start transfer - %#v"
+	errCouldNotGetAcc                   = "could not get account - %#v"
+	errCouldNotGetTr                    = "could not get transfer - %#v"
+)
 
 func (s securePaymentsService) StartTransfer(c *gin.Context, transfer models.Transfer) (models.Transfer, error) {
 	//check that to and from exist
