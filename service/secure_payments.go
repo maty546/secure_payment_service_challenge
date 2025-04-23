@@ -12,6 +12,8 @@ import (
 
 type ISecurePaymentsService interface {
 	StartTransfer(c *gin.Context, transfer models.Transfer) (models.Transfer, error)
+	GetTransferByID(c *gin.Context, transferID uint) (models.Transfer, error)
+	GetAccountByID(c *gin.Context, accountID uint) (models.Account, error)
 }
 
 type securePaymentsService struct {
@@ -28,6 +30,8 @@ var _ ISecurePaymentsService = (securePaymentsService{})
 var errCouldNotObtainDestinationAccount = "could not obtain destination account - %#v"
 var errCouldNotObtainOriginAccount = "could not obtain origin account - %#v"
 var errCouldNotStartTransfer = "could not start transfer - %#v"
+var errCouldNotGetAcc = "could not get account - %#v"
+var errCouldNotGetTr = "could not get transfer - %#v"
 
 func (s securePaymentsService) StartTransfer(c *gin.Context, transfer models.Transfer) (models.Transfer, error) {
 	//check that to and from exist
@@ -51,4 +55,24 @@ func (s securePaymentsService) StartTransfer(c *gin.Context, transfer models.Tra
 	}
 
 	return savedTransfer, nil
+}
+
+func (s securePaymentsService) GetTransferByID(c *gin.Context, transferID uint) (models.Transfer, error) {
+	transfer, err := s.transfersRepo.GetByID(c, transferID)
+	if err != nil {
+		log.Error(fmt.Sprintf("securePaymentsService | GetTransferByID err - %s", err.Error()))
+		return models.Transfer{}, fmt.Errorf(errCouldNotGetTr, err)
+	}
+
+	return transfer, nil
+}
+
+func (s securePaymentsService) GetAccountByID(c *gin.Context, accountID uint) (models.Account, error) {
+	acc, err := s.accountsRepo.GetByID(c, accountID)
+	if err != nil {
+		log.Error(fmt.Sprintf("securePaymentsService | GetAccountByID err - %s", err.Error()))
+		return models.Account{}, fmt.Errorf(errCouldNotGetAcc, err)
+	}
+
+	return acc, nil
 }

@@ -7,4 +7,6 @@ import (
 
 func RegisterRoutes(r *gin.Engine, controller controller.ISecurePaymentsController) {
 	r.POST("/transfer", controller.HandleTransferStart)
+	r.GET("/transfer/:id", controller.HandleTransferGet)
+	r.GET("/accounts/:id", controller.HandleAccountGet)
 }

@@ -11,7 +11,7 @@ import (
 )
 
 type ITransferRepository interface {
-	GetByID(c *gin.Context, id int) (models.Transfer, error)
+	GetByID(c *gin.Context, id uint) (models.Transfer, error)
 	Save(c *gin.Context, acc models.Transfer) (models.Transfer, error)
 }
 
@@ -25,7 +25,7 @@ func NewTransferRepository(db *gorm.DB) transferRepository {
 
 var _ ITransferRepository = (transferRepository{})
 
-func (r transferRepository) GetByID(c *gin.Context, id int) (models.Transfer, error) {
+func (r transferRepository) GetByID(c *gin.Context, id uint) (models.Transfer, error) {
 	var item models.Transfer
 	if result := r.db.First(&item, id); result.Error != nil {
 		log.Error(fmt.Sprintf("transferRepository | GetByID err - %s", result.Error.Error()))
