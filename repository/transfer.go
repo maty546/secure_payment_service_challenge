@@ -45,18 +45,20 @@ func (r transferRepository) Save(c *gin.Context, tr models.Transfer) (models.Tra
 
 	return tr, nil
 }
-
 func (r transferRepository) GetPendingPaymentsAmountForAccount(c *gin.Context, accountID string) (uint, error) {
-	var totalPending uint
-
+	var totalPending *uint
 	if result := r.db.Model(&models.Transfer{}).
 		Select("SUM(amount)").
-		Where("from_account_id = ? AND status = ?", accountID, models.TRANSFER_STATUS_PENDING).
+		Where("from_account_id = ? AND status = ?", accountID, "pending").
 		Scan(&totalPending); result.Error != nil {
 
 		log.Error(fmt.Sprintf("transferRepository | GetPendingPaymentsAmountForAccount err - %s", result.Error.Error()))
 		return 0, result.Error
 	}
 
-	return totalPending, nil
+	if totalPending == nil {
+		return 0, nil
+	}
+
+	return uint(*totalPending), nil
 }

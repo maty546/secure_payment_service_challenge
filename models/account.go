@@ -4,7 +4,7 @@ import "time"
 
 type Account struct {
 	ID        string `gorm:"primaryKey"`
-	Balance   int64
+	Balance   uint
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

@@ -6,7 +6,7 @@ type Transfer struct {
 	ID            uint `gorm:"primaryKey"`
 	FromAccountID string
 	ToAccountID   string
-	Amount        int64
+	Amount        uint
 	Status        TransferStatus
 	CreatedAt     time.Time
 	UpdatedAt     time.Time

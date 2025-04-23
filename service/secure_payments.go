@@ -62,7 +62,7 @@ func (s securePaymentsService) accountAbleToTransfer(c *gin.Context, accountID s
 	}
 	//todo remove
 	log.Info(fmt.Sprintf("balance %d, pending %d, transfer %d", acc.Balance, pendingPaymentsAmount, transfer.Amount))
-	return acc.Balance-int64(pendingPaymentsAmount) >= transfer.Amount
+	return acc.Balance-pendingPaymentsAmount >= transfer.Amount
 }
 
 func (s securePaymentsService) StartTransfer(c *gin.Context, transfer models.Transfer) (models.Transfer, error) {
