@@ -17,15 +17,23 @@ Challenge tecnico para INI.live
 
 ### Opcion 1 - Usar la script run.sh
 
-Se puede ejecutar despues de darle permiso con
+Despues de correr las migraciones de la carpeta "migrations" (para crear las tablas) se puede ejecutar la script run.sh. Se debe darle permiso con
 
 ```
 chmod +x run.sh
 ```
 
+Y luego
+
+```
+./run.sh
+```
+
 ### Opcion 2 - Levantar servicios a mano
 
-Primero es necesario correr un servidor de redis para el worker que se encarga de los tasks asincronos, corriendo la siguiente linea desde el directorio de "asyncServer" (exponiendo el puerto que se indica):
+Ejecutar migraciones de la carpeta "migrations".
+
+Es necesario correr un servidor de redis para el worker que se encarga de los tasks asincronos, corriendo la siguiente linea desde el directorio de "asyncServer" (exponiendo el puerto que se indica):
 
 ```
 docker run -d --name redis-asynq -p 6379:6379 redis
