@@ -15,6 +15,7 @@ Challenge tecnico para INI.live
 - Puede pasar que ocurra un Lost Update si llegan 2 pedidos de transferencia al mismo tiempo, que de llegar secuencialmente el segundo no seria permitido porque al usuario no le alcanza el balance.
 - El endpoint que usa el worker no usa el middleware de autenticacion. Esto idealmente no seria asi pero lo decidi para simplificar.
 - Hay varios valores, como urls, passwords y demas, que deberian ser configuraciones o secrets, que por falta de tiempo quedaron sin ordenar.
+- Hay metodos de la capa de repositorio que mezclan entidades (repo de transfer toca accounts) de una forma que hace un poco de ruido. Decidi dejarlo asi porque me parecio mas importante asegurar que las operaciones de balances y cambio de estado de transferencias sean una sola transaccion de DB. Para que quede mejor se podria refactorizar pero no hubo tiempo.
 
 ## Como levantar el proyecto
 
