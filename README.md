@@ -18,6 +18,16 @@ Challenge tecnico para INI.live
 
 ## Como levantar el proyecto
 
+### Opcion 1 - Usar la script run.sh
+
+Se puede ejecutar despues de darle permiso con
+
+```
+chmod +x run.sh
+```
+
+### Opcion 2 - Levantar servicios a mano
+
 Primero es necesario correr un servidor de redis para el worker que se encarga de los tasks asincronos, corriendo la siguiente linea desde el directorio de "asyncServer" (exponiendo el puerto que se indica):
 
 ```
