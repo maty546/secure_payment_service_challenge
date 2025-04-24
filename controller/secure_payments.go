@@ -16,6 +16,7 @@ type ISecurePaymentsController interface {
 	HandleTransferGet(c *gin.Context)
 	HandleAccountGet(c *gin.Context)
 	HandleTransferResultCallback(c *gin.Context)
+	HandleTimeoutCheckForTransfer(c *gin.Context)
 }
 
 type securePaymentsController struct {
@@ -98,6 +99,26 @@ func (s securePaymentsController) HandleTransferResultCallback(c *gin.Context) {
 	err := s.service.HandleTransferResultCallback(c, requestBody.TransferID, requestBody.Status)
 	if err != nil {
 		log.Error(fmt.Sprintf("securePaymentsController | HandleTransferStart err - %s", err.Error()))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, "ok")
+}
+
+func (s securePaymentsController) HandleTimeoutCheckForTransfer(c *gin.Context) {
+	idStr := c.Param("id")
+	log.Info("securePaymentsController | HandleTimeoutCheckForTransfer received call from worker!")
+
+	id, err := strconv.ParseUint(idStr, 10, 0)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		log.Error(fmt.Sprintf("securePaymentsController | HandleTimeoutCheckForTransfer err - %s", err.Error()))
+		return
+	}
+	err = s.service.HandleTimeoutCheckForTransfer(c, uint(id))
+	if err != nil {
+		log.Error(fmt.Sprintf("securePaymentsController | HandleTimeoutCheckForTransfer err - %s", err.Error()))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

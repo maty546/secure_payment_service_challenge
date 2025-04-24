@@ -19,7 +19,7 @@ func main() {
 	db := db.ConnectDB()
 	newAccountRepo := repository.NewAccountRepository(db)
 	newTransferRepo := repository.NewTransferRepository(db)
-	newService := service.NewService(newAccountRepo, newTransferRepo)
+	newService := service.NewService(newAccountRepo, newTransferRepo, "localhost:6379", "http://localhost:8080/secure-payments/no-auth/transfer/timeout/")
 	newController := controller.NewController(newService)
 
 	//auth user and pass could be a config, ideally a secret

@@ -3,8 +3,11 @@ package service
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
+	"time"
 
+	"github.com/hibiken/asynq"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/gin-gonic/gin"
@@ -17,15 +20,20 @@ type ISecurePaymentsService interface {
 	GetTransferByID(c *gin.Context, transferID uint) (models.Transfer, error)
 	GetAccountByID(c *gin.Context, accountID string) (models.Account, error)
 	HandleTransferResultCallback(c *gin.Context, transferID uint, status models.TransferStatus) error
+	HandleTimeoutCheckForTransfer(c *gin.Context, transferID uint) error
 }
 
 type securePaymentsService struct {
-	accountsRepo  repository.IAccountRepository
-	transfersRepo repository.ITransferRepository
+	accountsRepo                repository.IAccountRepository
+	transfersRepo               repository.ITransferRepository
+	asynqClient                 *asynq.Client
+	timeoutCheckForTransferAddr string
 }
 
-func NewService(accountsRepo repository.IAccountRepository, transfersRepo repository.ITransferRepository) securePaymentsService {
-	return securePaymentsService{accountsRepo, transfersRepo}
+func NewService(accountsRepo repository.IAccountRepository, transfersRepo repository.ITransferRepository, asynqClientAddr string, timeoutCheckAddr string) securePaymentsService {
+	client := asynq.NewClient(asynq.RedisClientOpt{Addr: asynqClientAddr})
+
+	return securePaymentsService{accountsRepo, transfersRepo, client, timeoutCheckAddr}
 }
 
 var _ ISecurePaymentsService = (securePaymentsService{})
@@ -108,6 +116,18 @@ func (s securePaymentsService) StartTransfer(c *gin.Context, transfer models.Tra
 		return models.Transfer{}, fmt.Errorf(errCouldNotPerformTransfer, errSaving)
 	}
 
+	//add async task to workqueue for checking timeouts
+	url := s.timeoutCheckForTransferAddr + strconv.FormatUint(uint64(savedTransfer.ID), 10)
+	//url := s.timeoutCheckForTransferAddr
+	task := asynq.NewTask("http:call", []byte(fmt.Sprintf(`{"url":"%s"}`, url)))
+
+	_, err := s.asynqClient.Enqueue(task, asynq.ProcessIn(10*time.Second))
+	if err != nil {
+		log.Error(fmt.Sprintf("securePaymentsService | StartTransfer err enqueuing timeout check - %s", err.Error()))
+		//should add recovery mechanic
+		return models.Transfer{}, err
+	}
+	log.Info(fmt.Sprintf("securePaymentsService | StartTransfer just enqueued task successfully with url %s", url))
 	return savedTransfer, nil
 }
 
@@ -189,4 +209,21 @@ func (s securePaymentsService) HandleTransferResultCallback(c *gin.Context, tran
 	}
 	return nil
 
+}
+
+func (s securePaymentsService) HandleTimeoutCheckForTransfer(c *gin.Context, transferID uint) error {
+	transfer, err := s.transfersRepo.GetByID(c, transferID)
+	if err != nil {
+		log.Error(fmt.Sprintf("securePaymentsService | HandleTimeoutCheckForTransfer err - %s", err.Error()))
+		return fmt.Errorf(errCouldNotGetTr, err)
+	}
+
+	if transfer.Status == models.TRANSFER_STATUS_PENDING {
+		err = s.transfersRepo.SetStatus(c, transferID, models.TRANSFER_STATUS_TIMEOUT)
+		if err != nil {
+			log.Error(fmt.Sprintf("securePaymentsService | HandleTimeoutCheckForTransfer err - %s", err.Error()))
+		}
+	}
+
+	return err
 }

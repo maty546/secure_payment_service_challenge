@@ -17,3 +17,4 @@ type TransferStatus string
 var TRANSFER_STATUS_PENDING TransferStatus = "PENDING"
 var TRANSFER_STATUS_COMPLETED TransferStatus = "COMPLETED"
 var TRANSFER_STATUS_FAILED TransferStatus = "FAILED"
+var TRANSFER_STATUS_TIMEOUT TransferStatus = "TIMEOUT"

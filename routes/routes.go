@@ -11,12 +11,17 @@ func RegisterRoutes(r *gin.Engine, controller controller.ISecurePaymentsControll
 	r.POST("/login", authHandler.GetToken)
 
 	securePaymentsGroup := r.Group("/secure-payments")
-	securePaymentsGroup.Use(authHandler.GetAuthMiddleware())
 
-	securePaymentsGroup.POST("/transfer", controller.HandleTransferStart)
-	securePaymentsGroup.GET("/transfer/:id", controller.HandleTransferGet)
-	securePaymentsGroup.GET("/accounts/:id", controller.HandleAccountGet)
+	securePaymentsAuthGroup := securePaymentsGroup.Group("/authorized-use")
+	securePaymentsAuthGroup.Use(authHandler.GetAuthMiddleware())
 
-	callbackGroup := securePaymentsGroup.Group("/callback")
+	securePaymentsAuthGroup.POST("/transfer", controller.HandleTransferStart)
+	securePaymentsAuthGroup.GET("/transfer/:id", controller.HandleTransferGet)
+	securePaymentsAuthGroup.GET("/accounts/:id", controller.HandleAccountGet)
+
+	callbackGroup := securePaymentsAuthGroup.Group("/callback")
 	callbackGroup.POST("/transfer/result", controller.HandleTransferResultCallback)
+
+	securePaymentsGroupNoAuthGroup := securePaymentsGroup.Group("/no-auth")
+	securePaymentsGroupNoAuthGroup.POST("/transfer/timeout/:id", controller.HandleTimeoutCheckForTransfer)
 }
