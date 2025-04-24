@@ -4,7 +4,7 @@
 
 Challenge tecnico para INI.live
 
-## Problemas observados
+## Problemas observados en la implementacion/puntos de mejora
 
 - Falta de tests. Por tiempo no hice todos los tests unitarios, pero deje uno de ejemplo en el servicio secure_payments, para mostrar el tipo de tests que suelo hacer (aproximadamente)
 - Puede pasar que ocurra un Lost Update si llegan 2 pedidos de transferencia al mismo tiempo, que de llegar secuencialmente el segundo no seria permitido porque al usuario no le alcanza el balance.
