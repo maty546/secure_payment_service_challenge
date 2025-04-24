@@ -53,7 +53,7 @@ make run
 
 Se puede usar el postman incluido en la carpeta tools. Cosas a tener en cuenta al probar:
 
-- El tiempo de timeout configurado para el task asincrono que chequea estado de transacciones es de 10 segundos
+- El tiempo de timeout configurado para el task asincrono que chequea estado de transacciones es de 30 segundos
 - Los endpoints dentro de la carpeta "Secure Endpoints" utilizan el middleware con validacion de jwt, por lo cual es necesario tomar el token desde el endpoint de login, con el usuario "api" y la clave "123" y enviarlo como Bearer Token.
 - Para que una cuenta sea considerada como externa debe contener la substring "ext"
 

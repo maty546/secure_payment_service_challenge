@@ -121,7 +121,7 @@ func (s securePaymentsService) StartTransfer(c *gin.Context, transfer models.Tra
 	//url := s.timeoutCheckForTransferAddr
 	task := asynq.NewTask("http:call", []byte(fmt.Sprintf(`{"url":"%s"}`, url)))
 
-	_, err := s.asynqClient.Enqueue(task, asynq.ProcessIn(10*time.Second))
+	_, err := s.asynqClient.Enqueue(task, asynq.ProcessIn(30*time.Second))
 	if err != nil {
 		log.Error(fmt.Sprintf("securePaymentsService | StartTransfer err enqueuing timeout check - %s", err.Error()))
 		//should add recovery mechanic
