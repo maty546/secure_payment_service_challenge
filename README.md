@@ -58,3 +58,8 @@ Se puede usar el postman incluido en la carpeta tools. Cosas a tener en cuenta a
 
 - El tiempo de timeout configurado para el task asincrono que chequea estado de transacciones es de 10 segundos
 - Los endpoints dentro de la carpeta "Secure Endpoints" utilizan el middleware con validacion de jwt, por lo cual es necesario tomar el token desde el endpoint de login, con el usuario "api" y la clave "123" y enviarlo como Bearer Token.
+
+## Misc
+
+Dejo un link de una planilla de google que deje para organizar mi trabajo y escribir casos de aceptacion, como curiosidad
+https://docs.google.com/spreadsheets/d/1DIH-u6JdDtWNDwCZcJFhSbZVVJ9hbeeq1RbPWzIjdck/edit?usp=sharing
