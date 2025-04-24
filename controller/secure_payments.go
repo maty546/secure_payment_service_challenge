@@ -15,6 +15,7 @@ type ISecurePaymentsController interface {
 	HandleTransferStart(c *gin.Context)
 	HandleTransferGet(c *gin.Context)
 	HandleAccountGet(c *gin.Context)
+	HandleTransferResultCallback(c *gin.Context)
 }
 
 type securePaymentsController struct {
@@ -82,4 +83,24 @@ func (s securePaymentsController) HandleAccountGet(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, account)
+}
+
+func (s securePaymentsController) HandleTransferResultCallback(c *gin.Context) {
+
+	var requestBody HandleTransferResultCallbackRequest
+
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		log.Error(fmt.Sprintf("securePaymentsController | HandleTransferStart err - %s", err.Error()))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := s.service.HandleTransferResultCallback(c, requestBody.TransferID, requestBody.Status)
+	if err != nil {
+		log.Error(fmt.Sprintf("securePaymentsController | HandleTransferStart err - %s", err.Error()))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, "ok")
 }

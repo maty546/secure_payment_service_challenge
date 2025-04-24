@@ -16,6 +16,7 @@ type ISecurePaymentsService interface {
 	StartTransfer(c *gin.Context, transfer models.Transfer) (models.Transfer, error)
 	GetTransferByID(c *gin.Context, transferID uint) (models.Transfer, error)
 	GetAccountByID(c *gin.Context, accountID string) (models.Account, error)
+	HandleTransferResultCallback(c *gin.Context, transferID uint, status models.TransferStatus) error
 }
 
 type securePaymentsService struct {
@@ -32,7 +33,7 @@ var _ ISecurePaymentsService = (securePaymentsService{})
 var (
 	errCouldNotObtainDestinationAccount = "could not obtain destination account - %#v"
 	errCouldNotObtainOriginAccount      = "could not obtain origin account - %#v"
-	errCouldNotStartTransfer            = "could not start transfer - %#v"
+	errCouldNotPerformTransfer          = "could not perform transfer - %#v"
 	errCouldNotGetAcc                   = "could not get account - %#v"
 	errCouldNotGetTr                    = "could not get transfer - %#v"
 	errTransferToSameAcc                = "cant transfer to the same account"
@@ -104,7 +105,7 @@ func (s securePaymentsService) StartTransfer(c *gin.Context, transfer models.Tra
 	savedTransfer, errSaving := s.transfersRepo.Save(c, transfer)
 	if errSaving != nil {
 		log.Error(fmt.Sprintf("securePaymentsService | StartTransfer err - %s", errSaving.Error()))
-		return models.Transfer{}, fmt.Errorf(errCouldNotStartTransfer, errSaving)
+		return models.Transfer{}, fmt.Errorf(errCouldNotPerformTransfer, errSaving)
 	}
 
 	return savedTransfer, nil
@@ -128,4 +129,64 @@ func (s securePaymentsService) GetAccountByID(c *gin.Context, accountID string) 
 	}
 
 	return acc, nil
+}
+
+func (s securePaymentsService) HandleTransferResultCallback(c *gin.Context, transferID uint, status models.TransferStatus) error {
+
+	if status != models.TRANSFER_STATUS_COMPLETED || status != models.TRANSFER_STATUS_FAILED {
+		log.Error("securePaymentsService | HandleTransferResultCallback err - invalid status received")
+		return errors.New("invalid status received")
+	}
+
+	transfer, err := s.transfersRepo.GetByID(c, transferID)
+	if err != nil {
+		log.Error(fmt.Sprintf("securePaymentsService | HandleTransferResultCallback err - %s", err.Error()))
+		return errors.New("could not obtain transfer")
+	}
+
+	if transfer.Status != models.TRANSFER_STATUS_PENDING {
+		log.Error("securePaymentsService | HandleTransferResultCallback err - transaction was already processed")
+		return errors.New("transaction was already processed")
+	}
+
+	//CASE FAILED
+	if status == models.TRANSFER_STATUS_FAILED {
+		s.transfersRepo.SetStatus(c, transferID, models.TRANSFER_STATUS_FAILED)
+		return nil
+	}
+
+	//CASE COMPLETED
+
+	//todo this behaviour should be in the consumed object
+	fromIsExternal := isExternalAccount(transfer.FromAccountID)
+	toIsExternal := isExternalAccount(transfer.ToAccountID)
+
+	//case internal to internal
+	if !fromIsExternal && !toIsExternal {
+		err := s.transfersRepo.CompleteInternalTransfer(c, transfer)
+		if err != nil {
+			log.Error(fmt.Sprintf("securePaymentsService | HandleTransferResultCallback err - %s", err.Error()))
+			return fmt.Errorf(errCouldNotPerformTransfer, err)
+		}
+		return nil
+	}
+
+	//case external to internal
+	if fromIsExternal {
+		err := s.transfersRepo.ReceiveExternalPayment(c, transfer.ToAccountID, transfer)
+		if err != nil {
+			log.Error(fmt.Sprintf("securePaymentsService | HandleTransferResultCallback err - %s", err.Error()))
+			return fmt.Errorf(errCouldNotPerformTransfer, err)
+		}
+		return nil
+	}
+
+	//case internal to external
+	err = s.transfersRepo.MakeExternalPayment(c, transfer.FromAccountID, transfer)
+	if err != nil {
+		log.Error(fmt.Sprintf("securePaymentsService | HandleTransferResultCallback err - %s", err.Error()))
+		return fmt.Errorf(errCouldNotPerformTransfer, err)
+	}
+	return nil
+
 }

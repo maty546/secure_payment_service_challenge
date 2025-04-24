@@ -9,4 +9,7 @@ func RegisterRoutes(r *gin.Engine, controller controller.ISecurePaymentsControll
 	r.POST("/transfer", controller.HandleTransferStart)
 	r.GET("/transfer/:id", controller.HandleTransferGet)
 	r.GET("/accounts/:id", controller.HandleAccountGet)
+
+	callback := r.Group("/callback")
+	callback.POST("/transfer/result", controller.HandleTransferResultCallback)
 }

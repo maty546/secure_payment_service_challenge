@@ -13,3 +13,8 @@ func (req HandleTransferStartRequest) parseIntoTransferModel() models.Transfer {
 		ToAccountID: req.ToAccountID,
 		Amount:      req.Amount}
 }
+
+type HandleTransferResultCallbackRequest struct {
+	TransferID uint                  `json:"transfer_id"`
+	Status     models.TransferStatus `json:"status"`
+}

@@ -15,3 +15,5 @@ type Transfer struct {
 type TransferStatus string
 
 var TRANSFER_STATUS_PENDING TransferStatus = "PENDING"
+var TRANSFER_STATUS_COMPLETED TransferStatus = "COMPLETED"
+var TRANSFER_STATUS_FAILED TransferStatus = "FAILED"
