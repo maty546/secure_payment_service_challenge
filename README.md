@@ -12,6 +12,7 @@ Challenge tecnico para INI.live
 
 ## Problemas observados
 
+- Falta de tests. Por tiempo no hice todos los tests unitarios, pero deje uno de ejemplo en el servicio secure_payments, para mostrar el tipo de tests que suelo hacer (aproximadamente)
 - Puede pasar que ocurra un Lost Update si llegan 2 pedidos de transferencia al mismo tiempo, que de llegar secuencialmente el segundo no seria permitido porque al usuario no le alcanza el balance.
 - El endpoint que usa el worker no usa el middleware de autenticacion. Esto idealmente no seria asi pero lo decidi para simplificar.
 - Hay varios valores, como urls, passwords y demas, que deberian ser configuraciones o secrets, que por falta de tiempo quedaron sin ordenar.
@@ -65,5 +66,7 @@ Se puede usar el postman incluido en la carpeta tools. Cosas a tener en cuenta a
 ## Misc
 
 Dejo links de unos docs de google que use para organizar mi trabajo y escribir casos de aceptacion, como curiosidad
+
 https://docs.google.com/spreadsheets/d/1DIH-u6JdDtWNDwCZcJFhSbZVVJ9hbeeq1RbPWzIjdck/edit?usp=sharing
+
 https://docs.google.com/document/d/1PoqFRjYlRfd8_Ah6BPCPaJ8nw45DuL1jronyexxR5tg/edit?usp=sharing
