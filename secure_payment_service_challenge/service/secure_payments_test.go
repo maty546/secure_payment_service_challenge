@@ -36,24 +36,26 @@ func TestSecurePaymentsService_StartTransfer(t *testing.T) {
 	expTransfer := models.Transfer{ID: 1, Amount: 10, FromAccountID: "ext_a", ToAccountID: "b", Status: models.TRANSFER_STATUS_PENDING, CreatedAt: nowTime, UpdatedAt: nowTime}
 
 	tests := []struct {
-		description string
-		transfer    models.Transfer
-		accMock     mock
-		trMock      mock
-		want        want
+		description    string
+		transfer       models.Transfer
+		transferToSave models.Transfer
+		accMock        mock
+		trMock         mock
+		want           want
 	}{
 
 		{description: "happy path external to internal",
-			transfer: testTransfer,
-			accMock:  mock{times: 1, response: testAcc},
-			trMock:   mock{times: 1, response: expTransfer},
-			want:     want{expectedTransfer: expTransfer, expectedErr: nil}},
+			transfer:       testTransfer,
+			transferToSave: expTransfer,
+			accMock:        mock{times: 1, response: testAcc},
+			trMock:         mock{times: 1, response: expTransfer},
+			want:           want{expectedTransfer: expTransfer, expectedErr: nil}},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.description, func(t *testing.T) {
-			mockAccRepo.EXPECT().GetByID(gomock.Any(), "b").Return(tc.accMock.response, tc.accMock.err).Times(tc.accMock.times)
-			mockTrRepo.EXPECT().Save(gomock.Any(), expTransfer).Return(tc.trMock.response, tc.trMock.err).Times(tc.trMock.times)
+			mockAccRepo.EXPECT().GetByID(gomock.Any(), tc.transfer.ToAccountID).Return(tc.accMock.response, tc.accMock.err).Times(tc.accMock.times)
+			mockTrRepo.EXPECT().Save(gomock.Any(), tc.transferToSave).Return(tc.trMock.response, tc.trMock.err).Times(tc.trMock.times)
 
 			resultTransfer, err := service.StartTransfer(testCtx, tc.transfer)
 
