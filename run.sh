@@ -2,7 +2,7 @@
 
 cd asyncServer/
 
-docker rm -f redis-async
+docker rm -f redis-asynq
 
 docker run -d --name redis-asynq -p 6379:6379 redis
 
