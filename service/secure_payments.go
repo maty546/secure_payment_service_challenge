@@ -133,7 +133,7 @@ func (s securePaymentsService) GetAccountByID(c *gin.Context, accountID string) 
 
 func (s securePaymentsService) HandleTransferResultCallback(c *gin.Context, transferID uint, status models.TransferStatus) error {
 
-	if status != models.TRANSFER_STATUS_COMPLETED || status != models.TRANSFER_STATUS_FAILED {
+	if status != models.TRANSFER_STATUS_COMPLETED && status != models.TRANSFER_STATUS_FAILED {
 		log.Error("securePaymentsService | HandleTransferResultCallback err - invalid status received")
 		return errors.New("invalid status received")
 	}
