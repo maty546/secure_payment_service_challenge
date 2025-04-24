@@ -63,5 +63,6 @@ Se puede usar el postman incluido en la carpeta tools. Cosas a tener en cuenta a
 
 ## Misc
 
-Dejo un link de una planilla de google que deje para organizar mi trabajo y escribir casos de aceptacion, como curiosidad
+Dejo links de unos docs de google que use para organizar mi trabajo y escribir casos de aceptacion, como curiosidad
 https://docs.google.com/spreadsheets/d/1DIH-u6JdDtWNDwCZcJFhSbZVVJ9hbeeq1RbPWzIjdck/edit?usp=sharing
+https://docs.google.com/document/d/1PoqFRjYlRfd8_Ah6BPCPaJ8nw45DuL1jronyexxR5tg/edit?usp=sharing
